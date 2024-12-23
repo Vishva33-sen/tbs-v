@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import BG from '../assets/sports_11zon.jpg';
 
 const LocationAndSports = () => {
     const [locations, setLocations] = useState([]);
     const [sports, setSports] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("");
+    const [hoveredItem, setHoveredItem] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,7 +23,6 @@ const LocationAndSports = () => {
     }, []);
 
     const handleSportClick = (location, sport) => {
-
         console.log(location);
         console.log(sport);
         if (location && sport) {
@@ -47,122 +47,103 @@ const LocationAndSports = () => {
         return `/images/${sportImageMap[sport] || "default.jpg"}`;
     };
 
+    // Inline styling objects
+    const bodyStyle = {
+        fontFamily: "'Roboto', sans-serif",
+        margin: 0,
+        padding: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "black",
+        backgroundImage: `url(${BG})`,
+    };
+
+    const locSportPageStyle = {
+        background: "rgba(0, 0, 0, 0.6)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        color: "white",
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "40px 20px",
+        boxSizing: "border-box",
+        borderRadius: "15px",
+        overflow: "hidden",
+    };
+
+    const titleStyle = {
+        marginTop: "10px",
+        fontSize: "36px",
+        color: "rgb(0,188,212)",
+        fontWeight: "bold",
+        textShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
+        border: "2px solid black",
+        padding:"10px",
+    };
+
+    const dropdownContainerStyle = {
+        marginTop: "30px",
+        width: "100%",
+        maxWidth: "300px",
+
+    };
+
+    const dropdownStyle = {
+        padding: "12px 15px",
+        fontSize: "20px",
+        width: "100%",
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+        backgroundColor: "rgb(0,188,212)",
+        color: "black",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        fontFamily: "bold",
+    };
+
+    const gridContainerStyle = {
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: "40px",
+        marginTop: "40px",
+        width: "100%",
+        maxWidth: "1200px",
+    };
+
+    const gridItemStyle = (isHovered) => ({
+        backgroundColor: "white",
+        borderRadius: "12px",
+        textAlign: "center",
+        cursor: "pointer",
+        overflow: "hidden",
+        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+        transform: isHovered ? "translateY(-10px)" : "none",
+        boxShadow: isHovered ? "6px 12px 24px rgba(0, 188, 212, 1)" : "0 4px 15px rgba(0, 0, 0, 0.2)",
+    });
+
+    const sportImageStyle = {
+        width: "100%",
+        height: "180px",
+        objectFit: "fill",
+        borderTopLeftRadius: "12px",
+        borderTopRightRadius: "12px",
+    };
 
     return (
-        <div>
-            <style>
-                {`
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    background: url('../assets/plain_background.jpg');
-                    background-size: cover;
-                    background-position: center;
-                    background-color:black;
-                }
-
-                .locsportpage {
-                    background: url('../assets/plain_background.jpg');
-                    background-size: cover;
-                    background-position: center;
-                    color: white;
-                    height: 100%;
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    margin-bottom:100px;
-                    padding: 20px;
-                    box-sizing: border-box;
-                }
-
-                .locsportpage h2 {
-                    margin-top: 100px;
-                }
-
-                .dropdown-container {
-                    margin-top: 20px;
-                }
-
-                .dropdown {
-                    padding: 10px;
-                    font-size: 18px;
-                    width: 200px;
-                    border-radius: 8px;
-                    border: 1px solid #ccc;
-                    background-color: rgb(226, 226, 226);
-                    color: rgb(0, 188, 212);
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                }
-
-                .dropdown:focus {
-                    outline: none;
-                    border-color: rgb(0, 188, 212);
-                }
-
-                .grid-container {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 40px;
-                    margin-top: 40px;
-                    width: 90%;
-                }
-
-                .grid-item {
-                    background-color: white;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                    cursor: pointer;
-                    transition: transform 0.3s ease, box-shadow 0.3s ease;
-                }
-
-                .grid-item:hover {
-                    transform: translateY(-5px);
-                    box-shadow: 10px 10px 20px rgba(0, 188, 212, 1);
-                }
-
-                .sport-image {
-                    width: 100%;
-                    height: 180px;
-                    object-fit: cover;
-                    border-top-left-radius: 8px;
-                    border-top-right-radius: 8px;
-                }
-
-                @media (max-width: 768px) {
-                    .grid-container {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-                }
-
-                @media (max-width: 480px) {
-                    .grid-container {
-                        grid-template-columns: 1fr;
-                    }
-
-                    .dropdown {
-                        width: 100%;
-                    }
-
-                    .locsportpage h2 {
-                        font-size: 20px;
-                    }
-                }
-                `}
-            </style>
-
-            <div className="locsportpage">
-                <h2>Select Location and Sport</h2>
-                <div className="dropdown-container">
+        <div style={bodyStyle}>
+            <div style={locSportPageStyle}>
+                <h2 style={titleStyle}>Select Location and Sport</h2>
+                <div style={dropdownContainerStyle}>
                     <select
-                        className="dropdown"
+                        style={dropdownStyle}
                         value={selectedLocation}
                         onChange={(e) => setSelectedLocation(e.target.value)}
                     >
@@ -175,18 +156,20 @@ const LocationAndSports = () => {
                     </select>
                 </div>
 
-                <div className="grid-container">
+                <div style={gridContainerStyle}>
                     {sports.length > 0 ? (
                         sports.map((sport, index) => (
                             <div
                                 key={index}
-                                className="grid-item"
+                                style={gridItemStyle(hoveredItem === index)}
                                 onClick={() => handleSportClick(selectedLocation, sport)}
+                                onMouseEnter={() => setHoveredItem(index)}
+                                onMouseLeave={() => setHoveredItem(null)}
                             >
                                 <img
                                     src={getSportImage(sport)}
                                     alt={sport}
-                                    className="sport-image"
+                                    style={sportImageStyle}
                                 />
                             </div>
                         ))

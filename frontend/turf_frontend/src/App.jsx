@@ -12,6 +12,7 @@ import SlotDetails from "./Pages/SlotDetails.jsx";
 import ConfirmPayment from "./Pages/ConfirmPayment.jsx";
 import UserProfile from "./Pages/UserProfile.jsx";
 import Wishlist from "./Pages/Wishlist.jsx";
+import EditProfile from "./Pages/EditProfile.jsx";
 
 const App = () => {
   return (
@@ -60,6 +61,8 @@ const App = () => {
                               </ProtectedRoute>
                           }
                       />
+                      <Route path="/editprofile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
+                      <Route path="/locationandsports" element={<ProtectedRoute><LocationAndSports/></ProtectedRoute>}></Route>
 
                   </Routes>
                   <Footer />

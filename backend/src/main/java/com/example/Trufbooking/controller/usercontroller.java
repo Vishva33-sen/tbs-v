@@ -5,6 +5,7 @@ import com.example.Trufbooking.entity.admintable;
 import com.example.Trufbooking.entity.userdto;
 import com.example.Trufbooking.entity.usertable;
 import com.example.Trufbooking.repository.Userinforepo;
+import com.example.Trufbooking.repository.userrepository;
 import com.example.Trufbooking.service.userservice;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -15,9 +16,13 @@ import jakarta.servlet.http.HttpSession;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -31,6 +36,8 @@ public class usercontroller {
     userservice userser;
     @Autowired
     Userinforepo userInfoRepository;
+    @Autowired
+    userrepository userrepo;
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody usertable user) {
         try {
@@ -107,6 +114,59 @@ public class usercontroller {
         List<admintable> wishlistDetails = userser.getWishlistDetailsByEmail(email);
         return ResponseEntity.ok(wishlistDetails);
     }
+    @PutMapping("/update")
+    public ResponseEntity<String> updateUserDetails(
+            @RequestParam("email") String email,
+            @RequestParam("username") String username,
+            @RequestParam("mobileNumber") long mobileNumber) {
+
+        return userrepo.findById(email).map(user -> {
+            user.setUsername(username);
+            user.setMobile_number(mobileNumber);
+            userrepo.save(user);
+            return ResponseEntity.ok("User details updated successfully");
+        }).orElse(ResponseEntity.badRequest().body("User not found"));
+    }
+    @PostMapping("/uploadImage")
+    public ResponseEntity<String> uploadImage(
+            @RequestParam("email") String email,
+            @RequestParam("image") MultipartFile imageFile) {
+
+        return userInfoRepository.findById(email).map(userInfo -> {
+            try {
+                userInfo.setImage(imageFile.getBytes());
+                userInfoRepository.save(userInfo);
+                return ResponseEntity.ok("Image uploaded successfully");
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body("Failed to upload image: " + e.getMessage());
+            }
+        }).orElse(ResponseEntity.badRequest().body("UserInfo not found"));
+    }
+    @GetMapping("/user/image/{email}")
+    public ResponseEntity<Map<String, String>> getUserImage(@PathVariable String email) {
+        return userInfoRepository.findById(email).map(userInfo -> {
+            try {
+                if (userInfo.getImage() != null && userInfo.getImage().length > 0) {
+                    // Encode the image to Base64
+                    String base64Image = Base64.getEncoder().encodeToString(userInfo.getImage());
+                    Map<String, String> response = new HashMap<>();
+                    response.put("image", base64Image);
+                    return ResponseEntity.ok(response);
+                } else {
+                    // Return null for missing image
+                    Map<String, String> response = new HashMap<>();
+                    response.put("image", null);
+                    return ResponseEntity.ok(response);
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Collections.singletonMap("error", "Failed to retrieve image: " + e.getMessage()));
+            }
+        }).orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap("error", "User not found")));
+    }
+
 
 }
+
 

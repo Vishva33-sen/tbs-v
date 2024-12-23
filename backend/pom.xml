@@ -83,7 +83,10 @@
 			<artifactId>google-http-client-jackson2</artifactId>
 			<version>1.42.3</version>
 		</dependency>
-
+<!--		<dependency>-->
+<!--			<groupId>com.stripe</groupId>-->
+<!--			<artifactId>stripe-java</artifactId>-->
+<!--		</dependency>>-->
 
 	</dependencies>
 

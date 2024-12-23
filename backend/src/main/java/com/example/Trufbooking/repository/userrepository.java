@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface userrepository extends JpaRepository<usertable,String> {
-    //boolean existsByEmail(String email);
+
     Optional<usertable> findByEmail(String email);
     usertable findByUsername(String username);
     @Query("SELECT new com.example.Trufbooking.entity.userdto(u.username, u.email, u.mobile_number) FROM usertable u WHERE u.email = :email")

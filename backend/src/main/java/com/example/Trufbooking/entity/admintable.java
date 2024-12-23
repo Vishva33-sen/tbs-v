@@ -33,8 +33,8 @@ public class admintable implements Serializable {
     @Column(name="price", nullable = false)
     private double price;
 
-    @Column(name = "sports", columnDefinition = "JSON", nullable = false)
-    @Convert(converter = SportsConverter.class)
-    private List<String> sports;
+    @Column(columnDefinition = "json")
+    private String sports;
+
 
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import BG from '../assets/sports_11zon.jpg';
 
 function SlotSelection() {
     const { turfId } = useParams();
@@ -21,7 +22,15 @@ function SlotSelection() {
             });
     }, [turfId]);
 
+    const isSlotInThePast = (date, time) => {
+        const [slotDate, slotTime] = time.split('-'); // Split the time range into start and end
+        const slotDateTime = new Date(`${date}T${slotDate}:00`);
+        return slotDateTime < new Date();
+    };
+
     const handleSlotClick = (date, time) => {
+        if (isSlotInThePast(date, time)) return; // Prevent selection of past slots
+
         const selectedSlot = { date, time };
         setSelectedSlots((prevSelectedSlots) => {
             if (!prevSelectedSlots.some((slot) => slot.date === date && slot.time === time)) {
@@ -34,7 +43,7 @@ function SlotSelection() {
     const handleProceedPayment = () => {
         console.log("Selected Slots for Payment:", selectedSlots);
         localStorage.setItem("selectedSlots", JSON.stringify(selectedSlots));
-        navigate(`/confirmpayment`);
+        navigate("/confirmpayment");
     };
 
     return (
@@ -42,9 +51,13 @@ function SlotSelection() {
             style={{
                 padding: "30px",
                 fontFamily: "Arial, sans-serif",
-                background: "linear-gradient(135deg, #121212, #1f1f1f)", // Gradient background
+                background: "linear-gradient(135deg, #121212, #1f1f1f)",
                 color: "#fff",
                 minHeight: "100vh",
+                backgroundImage: `url(${BG})`,
+                alignItems:"center",
+
+
             }}
         >
             <h1
@@ -54,7 +67,12 @@ function SlotSelection() {
                     fontSize: "36px",
                     fontWeight: "bold",
                     textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)",
-                    marginBottom: "40px", // Increased bottom margin for spacing
+                    marginBottom: "40px",
+                    border: "2px solid black",
+                    padding:"10px",
+                    width:"450px",
+                    marginLeft:"480px",
+
                 }}
             >
                 Select Your Slot
@@ -65,10 +83,10 @@ function SlotSelection() {
                     <div
                         key={index}
                         style={{
-                            marginBottom: "50px", // Increased spacing between days
+                            marginBottom: "50px",
                             padding: "20px",
                             borderRadius: "12px",
-                            background: "#2c2c2c",
+                            backgroundColor: "rgba(0, 0, 0, 0.8)",
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
                         }}
                     >
@@ -96,7 +114,7 @@ function SlotSelection() {
                             <div
                                 style={{
                                     display: "grid",
-                                    gridTemplateColumns: "repeat(6, 1fr)", // 6 slots per row
+                                    gridTemplateColumns: "repeat(6, 1fr)",
                                     gap: "20px",
                                     justifyItems: "center",
                                 }}
@@ -107,18 +125,22 @@ function SlotSelection() {
                                         style={{
                                             border: "2px solid transparent",
                                             borderRadius: "12px",
-                                            padding: "20px 15px", // Increased padding for larger buttons
-                                            background: selectedSlots.some(
-                                                (s) => s.date === slot.date && s.time === time
-                                            )
-                                                ? "linear-gradient(135deg, #00d4ff, #007bff)"
-                                                : "linear-gradient(135deg, #2c2c2c, #1c1c1c)",
+                                            padding: "20px 15px",
+                                            background: isSlotInThePast(slot.date, time)
+                                                ? "linear-gradient(135deg, #3c3c3c, #1c1c1c)" // Default past slot color
+                                                : selectedSlots.some(
+                                                    (s) => s.date === slot.date && s.time === time
+                                                )
+                                                    ? "linear-gradient(135deg, #00d4ff, #007bff)" // Selected slot color
+                                                    : "linear-gradient(135deg, #2c2c2c, #1c1c1c)", // Available slot color
                                             color: "#fff",
                                             textAlign: "center",
                                             fontWeight: "bold",
-                                            fontSize: "16px", // Larger font size
+                                            fontSize: "16px",
                                             whiteSpace: "nowrap",
-                                            cursor: "pointer",
+                                            cursor: isSlotInThePast(slot.date, time)
+                                                ? "not-allowed"
+                                                : "pointer",
                                             transition: "all 0.3s ease-in-out",
                                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
                                             transform: selectedSlots.some(
@@ -127,12 +149,25 @@ function SlotSelection() {
                                                 ? "scale(1.05)"
                                                 : "scale(1)",
                                         }}
-                                        onClick={() => handleSlotClick(slot.date, time)}
+                                        onClick={() =>
+                                            !isSlotInThePast(slot.date, time) &&
+                                            handleSlotClick(slot.date, time)
+                                        }
                                         onMouseEnter={(e) => {
-                                            e.target.style.boxShadow = "0 6px 12px rgba(0, 212, 255, 0.9)";
+                                            if (!isSlotInThePast(slot.date, time)) {
+                                                e.target.style.boxShadow = "0 6px 12px rgba(0, 212, 255, 0.9)";
+                                            } else {
+                                                e.target.style.background = "linear-gradient(135deg, #ff4d4d, #b30000)"; // Red for past slots
+                                                e.target.style.boxShadow = "0 6px 12px rgba(255, 0, 0, 0.5)";
+                                            }
                                         }}
                                         onMouseLeave={(e) => {
-                                            e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)";
+                                            if (!isSlotInThePast(slot.date, time)) {
+                                                e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)";
+                                            } else {
+                                                e.target.style.background = "linear-gradient(135deg, #3c3c3c, #1c1c1c)"; // Reset to past slot color
+                                                e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.3)";
+                                            }
                                         }}
                                     >
                                         {time}
@@ -143,7 +178,7 @@ function SlotSelection() {
                     </div>
                 ))
             ) : (
-                <p style={{ textAlign: "center", fontSize: "18px", color: "#aaa" }}>
+                <p style={{ textAlign: "center", fontSize: "18px", color: "white" }}>
                     No available slots for this turf.
                 </p>
             )}
@@ -155,9 +190,9 @@ function SlotSelection() {
                             background: "linear-gradient(135deg, #00d4ff, #007bff)",
                             color: "#fff",
                             fontSize: "18px",
-                            padding: "14px 30px", // Slightly larger padding for a more prominent button
+                            padding: "14px 30px",
                             border: "none",
-                            borderRadius: "10px", // Slightly rounded corners
+                            borderRadius: "10px",
                             cursor: "pointer",
                             transition: "all 0.3s ease-in-out",
                             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",

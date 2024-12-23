@@ -5,6 +5,8 @@ import com.example.Trufbooking.entity.slotdto;
 import com.example.Trufbooking.service.adminservice;
 import com.example.Trufbooking.service.slotservice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,5 +38,15 @@ public class slotcontroller {
         response.put("availableSlots", availableSlots);
 
         return response;
+    }
+    @PutMapping("/update-dates")
+    public ResponseEntity<String> updateDates() {
+        try {
+            slotser.updateDatesWithCurrentDate();
+            return ResponseEntity.ok("Dates updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating dates: " + e.getMessage());
+        }
     }
 }

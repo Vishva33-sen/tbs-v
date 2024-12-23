@@ -10,7 +10,7 @@ const Footer = () => {
             color: "#fff",
             textAlign: "center",
             marginTop: "auto", // Pushes the footer to the bottom
-            width: "100%",
+            width: "95%",
         },
         socialIcons: {
             display: "flex",

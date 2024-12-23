@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BG from "../assets/sports_11zon.jpg";
 
 function ConfirmPayment() {
     const [turfDetails, setTurfDetails] = useState(null);
@@ -29,10 +30,63 @@ function ConfirmPayment() {
         }
     }, []);
 
-    const handlePayNow = () => {
-        alert("Redirecting to payment page...");
-        navigate("/payment"); // Navigate to the payment page
+    const handlePayNow = async () => {
+        const storedTurfDetails = JSON.parse(localStorage.getItem("turfDetails"));
+        const storedSelectedSlots = JSON.parse(localStorage.getItem("selectedSlots"));
+        const storedEmail = localStorage.getItem("email"); // Retrieve email from local storage
+        const authToken = localStorage.getItem("authToken"); // Assuming token is stored in local storage
+        console.log("slot_details", storedSelectedSlots);
+
+        if (storedTurfDetails && storedSelectedSlots.length > 0 && storedEmail) {
+            try {
+                // Group slots by date
+                const groupedSlots = storedSelectedSlots.reduce((acc, slot) => {
+                    const { date, time } = slot;
+                    if (!acc[date]) {
+                        acc[date] = [];
+                    }
+                    acc[date].push(time);
+                    return acc;
+                }, {});
+
+                // Create booking details array
+                const bookingDetailsArray = Object.entries(groupedSlots).map(([date, times]) => ({
+                    email: storedEmail, // Use the email from local storage
+                    turfid: storedTurfDetails.turfid,
+                    payed_amt: storedTurfDetails.price * times.length, // Calculate total amount for the date
+                    date, // Use the grouped date
+                    time: times, // All times for this date
+                }));
+
+                console.log("bookingDetailsArray", bookingDetailsArray);
+
+                // Send each booking detail separately
+                for (const bookingDetails of bookingDetailsArray) {
+                    const response = await fetch("http://localhost:8081/bookings/add", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${authToken}`,
+                        },
+                        body: JSON.stringify(bookingDetails),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to add booking for date: " + bookingDetails.date);
+                    }
+                }
+
+                alert("All bookings added successfully!");
+                // navigate("/payment"); // Redirect to payment page
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error while saving bookings. Please try again.");
+            }
+        } else {
+            alert("No turf or slots selected, or email missing.");
+        }
     };
+
 
     return (
         <div
@@ -45,16 +99,22 @@ function ConfirmPayment() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                backgroundImage: `url(${BG})`,
+                backgroundSize: "cover", // Ensure the background covers the screen properly
+                backgroundPosition: "center", // Center the background
             }}
         >
             <h1
                 style={{
                     textAlign: "center",
-                    color: "#00d4ff", // Consistent with previous pages
+                    color: "#00e1ff", // Consistent with previous pages
                     fontSize: "40px",
                     fontWeight: "700",
                     marginBottom: "40px", // Increased bottom margin for spacing
                     textTransform: "uppercase",
+                    letterSpacing: "2px", // Add spacing for a more professional look
+                    border: "2px solid black",
+                    padding: "10px",
                 }}
             >
                 Confirm Payment
@@ -69,11 +129,12 @@ function ConfirmPayment() {
                         boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)", // Enhanced box shadow for 3D effect
                         width: "100%",
                         maxWidth: "700px", // Consistent width for all boxes
+                        textAlign: "center", // Center the text inside the box
+                        backgroundColor: "rgba(0, 0, 0, 0.8)",
                     }}
                 >
                     <h2
                         style={{
-                            textAlign: "center",
                             color: "#00d4ff", // Matching color for headers
                             fontSize: "26px",
                             fontWeight: "600",
@@ -98,11 +159,12 @@ function ConfirmPayment() {
                         boxShadow: "0 8px 25px rgba(0, 0, 0, 0.3)", // Enhanced box shadow for 3D effect
                         width: "100%",
                         maxWidth: "700px", // Consistent width for all boxes
+                        textAlign: "center", // Center-aligning the slots
+                        backgroundColor: "rgba(0, 0, 0, 0.9)",
                     }}
                 >
                     <h2
                         style={{
-                            textAlign: "center",
                             color: "#00d4ff", // Matching color for headers
                             fontSize: "26px",
                             fontWeight: "600",
@@ -116,7 +178,6 @@ function ConfirmPayment() {
                             listStyleType: "none",
                             padding: 0,
                             fontSize: "16px",
-                            textAlign: "center", // Center-aligning the slots
                         }}
                     >
                         {selectedSlots.map((slot, index) => (
@@ -141,6 +202,7 @@ function ConfirmPayment() {
                     width: "100%",
                     maxWidth: "700px", // Consistent width for all boxes
                     textAlign: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.9)",
                 }}
             >
                 <h3 style={{ fontSize: "28px", color: "#00d4ff", fontWeight: "bold" }}>
@@ -165,8 +227,9 @@ function ConfirmPayment() {
                         borderRadius: "8px",
                         cursor: "pointer",
                         transition: "all 0.3s ease-in-out",
-                        boxShadow: "0 6px 15px rgba(0, 0, 0, 0.4)", // Enhanced button shadow for 3D effect
+                        boxShadow: "0 6px 15px rgba(0, 0, 0, 1)", // Enhanced button shadow for 3D effect
                         width: "100%", // Same width as the boxes
+                        borderColor: "black",
                     }}
                     onMouseEnter={(e) => {
                         e.target.style.background = "linear-gradient(135deg, #007bff, #0056b3)";

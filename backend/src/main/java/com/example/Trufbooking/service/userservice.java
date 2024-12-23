@@ -5,6 +5,7 @@ import com.example.Trufbooking.entity.admintable;
 import com.example.Trufbooking.entity.userdto;
 import com.example.Trufbooking.entity.usertable;
 import com.example.Trufbooking.repository.Userinforepo;
+import com.example.Trufbooking.repository.Userloginauthrepo;
 import com.example.Trufbooking.repository.turfrepo;
 import com.example.Trufbooking.repository.userrepository;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class userservice {
     private Userinforepo userInfoRepository;
     @Autowired
     private turfrepo turfRepository;
+    @Autowired
+    private Userloginauthrepo userloginauth;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -121,6 +124,16 @@ public class userservice {
         return turfs;
 
     }
+//    public usertable updateUser(String email, String newUsername, long newMobileNumber) {
+//        // Use the Optional's ifPresent or orElseThrow to handle null safely
+//        usertable user = userloginauth.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+//
+//        user.setUsername(newUsername);
+//        user.setMobile_number(newMobileNumber);
+//
+//        return userrepo.save(user);  // Save the updated user object back to the repository
+//    }
 
 
 }

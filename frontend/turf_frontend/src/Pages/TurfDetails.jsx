@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import BG from '../assets/sports_11zon.jpg';
 
 function TurfDetails() {
     const [searchParams] = useSearchParams();
@@ -31,6 +32,7 @@ function TurfDetails() {
     const handleSelectSlot = (turfId) => {
         navigate(`/${turfId}`);
     };
+
     // Fetch user's wishlist on component mount
     useEffect(() => {
         if (userEmail) {
@@ -69,13 +71,28 @@ function TurfDetails() {
 
     const containerStyle = {
         color: "white",
-        background: "url('../assets/plain_background.jpg') no-repeat center center fixed",
+        backgroundImage: `url(${BG})`,
         backgroundSize: "cover",
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
-        paddingTop: "75px",
+        paddingTop: "40px",
         minHeight: "100vh",
+        backgroundPosition: "center",
+        position: "relative", // To allow overlay positioning
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+    };
+
+    // Darker overlay style
+    const overlayStyle = {
+        position: "absolute",
+        top: "0",
+        left: "0",
+        right: "0",
+        bottom: "0",
+        backgroundColor: "rgba(0, 0, 0, 0.7)", // Dark overlay with higher opacity (more darkness)
+        zIndex: "-1", // Behind the content
     };
 
     const gridStyle = {
@@ -95,9 +112,9 @@ function TurfDetails() {
         border: "1px solid #ccc",
         borderRadius: "8px",
         padding: "15px",
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0,0,0,0.8)",
         boxShadow: isHovered
-            ? "0 4px 15px rgba(0, 188, 212, 1)"
+            ? "6px 12px 12px rgba(0, 188, 212, 1)"
             : "0 2px 5px rgba(0, 0, 0, 0.1)",
         transform: isHovered ? "scale(1.05)" : "scale(1)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease",
@@ -128,6 +145,7 @@ function TurfDetails() {
         fontSize: "16px",
         transition: "background-color 0.3s ease",
         marginTop: "10px",
+        width:"100%",
     };
 
     const buttonHoverStyle = {
@@ -144,7 +162,7 @@ function TurfDetails() {
     const heartStyle = {
         cursor: "pointer",
         color: "#ccc",
-        fontSize: "24px",
+        fontSize: "30px",
         transition: "color 0.3s ease",
     };
 
@@ -153,11 +171,22 @@ function TurfDetails() {
     };
 
     const h1Style = {
-        paddingLeft: "20px",
+        padding:"15px",
+        color:"rgb(0,188,212)",
+        backgroundColor:"rgba(0,0,0,0.6)",
+        borderRadius:"8px",
+        marginBottom:"20px",
     };
+    const h2Style={
+        display:"flex",
+        flexDirection:"column",
+        alignItems:"center",
+
+    }
 
     return (
         <div style={containerStyle}>
+            <div style={overlayStyle}></div> {/* Dark overlay */}
             <h1 style={h1Style}>Turf Details</h1>
             {turfs.length > 0 ? (
                 <div style={gridStyle}>
@@ -172,8 +201,8 @@ function TurfDetails() {
                                 onMouseLeave={() => setHoveredCard(null)}
                             >
                                 <div style={imgContainerStyle}></div>
-                                <div>
-                                    <h2>{turf.turfname}</h2>
+                                <div style={h2Style}>
+                                    <h2 >{turf.turfname}</h2>
                                     <p>Location: {turf.location}</p>
                                     <p>Price: ${turf.price}</p>
                                     <p>Contact: {turf.mobilenumber}</p>
@@ -186,10 +215,7 @@ function TurfDetails() {
                                                 ...starStyle,
                                                 color: index < turfRating ? "#f39c12" : "#ccc",
                                             }}
-                                            onClick={() =>
-
-                                                handleRatingClick(turf.turfid, index + 1)
-                                            }
+                                            onClick={() => handleRatingClick(turf.turfid, index + 1)}
                                         >
                                             &#9733;
                                         </span>
@@ -209,10 +235,10 @@ function TurfDetails() {
                                 </button>
                                 <div
                                     style={heartStyle}
-                                    onClick={() =>{
+                                    onClick={() => {
                                         console.log("Heart Clicked for Turf ID:", turf.turfid);
                                         handleWishlistToggle(turf.turfid);
-                                }}
+                                    }}
                                 >
                                     <span
                                         style={
@@ -229,7 +255,7 @@ function TurfDetails() {
                     })}
                 </div>
             ) : (
-                <p>No turfs available for the selected location and sport.</p>
+                <p style={{ color: "white" }}>No turfs available for the selected location and sport.</p>
             )}
         </div>
     );

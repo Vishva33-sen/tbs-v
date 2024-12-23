@@ -2,7 +2,9 @@ package com.example.Trufbooking.repository;
 
 import com.example.Trufbooking.entity.admintable;
 import com.example.Trufbooking.entity.slot;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -32,5 +34,16 @@ public interface slotrepo extends JpaRepository<slot, Integer> {
             "GROUP BY " +
             "    turfid, jt.date", nativeQuery = true)
     List<Object[]> findAvailableSlotsByTurfId(Integer turfId);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE slot_detail t " +
+            "SET t.time = JSON_SET(t.time, " +
+            "   '$[0].date', :today , " +
+            "   '$[1].date', :tomorrow , " +
+            "   '$[2].date', :dayAfterTomorrow ) " +
+            "WHERE JSON_CONTAINS(t.time, JSON_OBJECT('date', :today), '$')", nativeQuery = true)
+    void executeCustomUpdate(@Param("today") String today,
+                             @Param("tomorrow") String tomorrow,
+                             @Param("dayAfterTomorrow") String dayAfterTomorrow);
 
 }

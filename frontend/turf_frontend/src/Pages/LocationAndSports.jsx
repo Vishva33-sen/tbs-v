@@ -35,12 +35,12 @@ const LocationAndSports = () => {
     // Function to get the image path based on the sport name
     const getSportImage = (sport) => {
         const sportImageMap = {
-            tennis: "tennis.jpeg",
-            football: "football.jpg",
-            volleyball: "volleyball.jpg",
-            badminton: "badminton.jpg",
-            cricket: "cricket.jpg",
-            basketball: "basketball.jpeg",
+            Tennis: "tennis.jpeg",
+            Football: "football.jpg",
+            Volleyball: "volleyball.jpg",
+            Badminton: "badminton.jpg",
+            Cricket: "cricket.jpg",
+            Basketball: "basketball.jpeg",
         };
 
         // Default image if the sport is not found in the map

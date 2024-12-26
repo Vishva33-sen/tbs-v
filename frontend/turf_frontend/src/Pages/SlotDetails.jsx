@@ -46,6 +46,9 @@ function SlotSelection() {
         navigate("/confirmpayment");
     };
 
+
+
+
     return (
         <div
             style={{

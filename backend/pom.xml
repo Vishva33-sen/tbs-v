@@ -84,9 +84,10 @@
 			<version>1.42.3</version>
 		</dependency>
 <!--		<dependency>-->
-<!--			<groupId>com.stripe</groupId>-->
-<!--			<artifactId>stripe-java</artifactId>-->
-<!--		</dependency>>-->
+<!--			<groupId>com.fasterxml.jackson.core</groupId>-->
+<!--			<artifactId>jackson-databind</artifactId>-->
+<!--			 &lt;!&ndash; Replace with the latest version if needed &ndash;&gt;-->
+<!--		</dependency>-->
 
 	</dependencies>
 

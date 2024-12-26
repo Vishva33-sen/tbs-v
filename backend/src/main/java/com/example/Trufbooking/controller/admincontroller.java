@@ -2,12 +2,14 @@ package com.example.Trufbooking.controller;
 
 import com.example.Trufbooking.entity.admintable;
 import com.example.Trufbooking.entity.turfDto;
+import com.example.Trufbooking.repository.admintable_repo;
 import com.example.Trufbooking.service.adminservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.sql.SQLException;
+import java.util.*;
 
 @RestController
 @RequestMapping("/home")
@@ -16,6 +18,8 @@ public class admincontroller {
 
     @Autowired
     adminservice adminser;
+    @Autowired
+    admintable_repo adminrepo;
 
     @GetMapping("/locations")
     public List<String> getDistinctLocations() {
@@ -28,12 +32,44 @@ public class admincontroller {
         return adminser.getDistinctSports();
     }
     @GetMapping("/turfs")
-    public List<admintable> getTurfDetails(@RequestParam String location, @RequestParam String sport) {
-        //return adminser.findTurfsByLocationAndSport(location, sport);
+    public List<Map<String, Object>> getTurfDetails(@RequestParam String location, @RequestParam String sport) {
         List<admintable> turfs = adminser.findTurfsByLocationAndSport(location, sport);
-        turfs.forEach(turf -> System.out.println(turf));
-        return turfs;
+
+        List<Map<String, Object>> turfsWithImages = new ArrayList<>();
+        for (admintable turf : turfs) {
+            Map<String, Object> turfMap = new HashMap<>();
+            turfMap.put("turfid",turf.getTurfid());
+            turfMap.put("turfname", turf.getTurfname());
+            turfMap.put("location", turf.getLocation());
+            turfMap.put("mobilenumber", turf.getMobilenumber());
+            turfMap.put("price", turf.getPrice());
+            turfMap.put("sports", turf.getSports());
+            turfMap.put("length", turf.getLength());
+            turfMap.put("breadth", turf.getBreadth());
+
+            try {
+                if (turf.getImage() != null) {
+                    byte[] imageBytes = turf.getImage().getBytes(1, (int) turf.getImage().length());
+                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                    turfMap.put("image", base64Image);
+                } else {
+                    turfMap.put("image", null);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                turfMap.put("image", null); // Handle image as null in case of error
+            }
+
+            turfsWithImages.add(turfMap);
+        }
+
+        return turfsWithImages;
     }
+//    @GetMapping("/{turfid}")
+//    public List<admintable> getTurfDetails(@PathVariable String turfid) {
+//        List<admintable>turfdet=adminrepo.findAll();
+//        return turfdet;
+//    }
 
 
 }

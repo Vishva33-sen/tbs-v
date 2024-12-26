@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface slotrepo extends JpaRepository<slot, Integer> {
@@ -34,6 +35,8 @@ public interface slotrepo extends JpaRepository<slot, Integer> {
             "GROUP BY " +
             "    turfid, jt.date", nativeQuery = true)
     List<Object[]> findAvailableSlotsByTurfId(Integer turfId);
+
+
     @Modifying
     @Transactional
     @Query(value = "UPDATE slot_detail t " +
@@ -45,5 +48,10 @@ public interface slotrepo extends JpaRepository<slot, Integer> {
     void executeCustomUpdate(@Param("today") String today,
                              @Param("tomorrow") String tomorrow,
                              @Param("dayAfterTomorrow") String dayAfterTomorrow);
+
+
+    @Query("SELECT s FROM slot s WHERE s.turf.turfid = :turfid")
+    Optional<slot> findByTurfId(int turfid);
+
 
 }

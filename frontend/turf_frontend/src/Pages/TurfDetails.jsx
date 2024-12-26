@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import BG from '../assets/sports_11zon.jpg';
-
 function TurfDetails() {
     const [searchParams] = useSearchParams();
     const [turfs, setTurfs] = useState([]);
@@ -23,6 +22,7 @@ function TurfDetails() {
 
                 const initialRatings = {};
                 response.data.forEach((turf) => {
+                    console.log(turf.admin_id)
                     initialRatings[turf.turfid] = turf.rating || 0;
                 });
                 setRatings(initialRatings);
@@ -124,16 +124,16 @@ function TurfDetails() {
         margin: "auto",
     });
 
-    const imgContainerStyle = {
+    const imgContainerStyle = (image) => ({
         height: "180px",
         width: "100%",
         borderRadius: "8px",
         backgroundColor: "#ddd",
-        backgroundImage: "url('../assets/turf.jpg')",
+        backgroundImage: image ? `url(data:image/jpeg;base64,${image})` : "url('../assets/turf.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         marginBottom: "10px",
-    };
+    });
 
     const buttonStyle = {
         backgroundColor: "#00bcd4",
@@ -145,7 +145,7 @@ function TurfDetails() {
         fontSize: "16px",
         transition: "background-color 0.3s ease",
         marginTop: "10px",
-        width:"100%",
+        width: "100%",
     };
 
     const buttonHoverStyle = {
@@ -181,7 +181,6 @@ function TurfDetails() {
         display:"flex",
         flexDirection:"column",
         alignItems:"center",
-
     }
 
     return (
@@ -191,6 +190,7 @@ function TurfDetails() {
             {turfs.length > 0 ? (
                 <div style={gridStyle}>
                     {turfs.map((turf) => {
+
                         const turfRating = ratings[turf.turfid] || 0;
 
                         return (
@@ -200,12 +200,14 @@ function TurfDetails() {
                                 onMouseEnter={() => setHoveredCard(turf.turfid)}
                                 onMouseLeave={() => setHoveredCard(null)}
                             >
-                                <div style={imgContainerStyle}></div>
+                                <div style={imgContainerStyle(turf.image)}></div>
                                 <div style={h2Style}>
                                     <h2 >{turf.turfname}</h2>
                                     <p>Location: {turf.location}</p>
-                                    <p>Price: ${turf.price}</p>
+                                    <p>Price: ₹ {turf.price}</p>
                                     <p>Contact: {turf.mobilenumber}</p>
+                                    <p>Length: {turf.length}</p>
+                                    <p>Breadth: {turf.breadth}</p>
                                 </div>
                                 <div>
                                     {[...Array(5)].map((_, index) => (
@@ -229,7 +231,10 @@ function TurfDetails() {
                                     onMouseLeave={(e) =>
                                         Object.assign(e.currentTarget.style, buttonStyle)
                                     }
-                                    onClick={() => handleSelectSlot(turf.turfid)}
+
+                                    onClick={() =>{
+
+                                        handleSelectSlot(turf.turfid)}}
                                 >
                                     Select Slot
                                 </button>
@@ -241,11 +246,9 @@ function TurfDetails() {
                                     }}
                                 >
                                     <span
-                                        style={
-                                            wishlist.includes(turf.turfid)
-                                                ? heartActiveStyle
-                                                : {}
-                                        }
+                                        style={wishlist.includes(turf.turfid)
+                                            ? heartActiveStyle
+                                            : {}}
                                     >
                                         &#9829;
                                     </span>
@@ -260,5 +263,4 @@ function TurfDetails() {
         </div>
     );
 }
-
 export default TurfDetails;

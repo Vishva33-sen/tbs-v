@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import BG from '../assets/sports_11zon.jpg';
 import profile_image from '../assets/profile_photo.jpg';
+import axios from "axios";
 
 const DashboardPage = () => {
     const [user, setUser] = useState({
@@ -13,7 +14,7 @@ const DashboardPage = () => {
     const [imageSrc, setImageSrc] = useState(profile_image); // Default image
     const [activeSection, setActiveSection] = useState('profile'); // Track active section
     const navigate = useNavigate();
-
+    const [showPopup, setShowPopup] = useState(false);
     const myBookingsRef = useRef(null);
     const supportRef = useRef(null);
 
@@ -49,6 +50,43 @@ const DashboardPage = () => {
             console.error('Error fetching bookings:', error);
         }
     };
+    const handleCancelBooking = async (turfid, date, time, booking_id) => {
+        const confirmCancel = window.confirm(
+            `Are you sure you want to cancel the booking on ${date} at ${time.join(", ")}?`
+        );
+
+        if (!confirmCancel) {
+            return; // If user selects "Cancel", exit the function
+        }
+
+        try {
+            const response = await axios.put(
+                `http://localhost:8081/admin/cancel/${turfid}`,
+                { date, time } // Pass time as an array in the body
+            );
+
+            if (response.data.success) {
+                alert(response.data.message); // Show success message
+                const deleteResponse = await axios.delete(
+                    `http://localhost:8081/bookings/${booking_id}`
+                );
+
+                if (deleteResponse.data.success) {
+                    alert(deleteResponse.data.message); // Show success message for deletion
+                    window.location.reload(); // Reload the page
+                } else {
+                    alert(deleteResponse.data.message); // Show error message for deletion
+                }
+            } else {
+                alert(response.data.message); // Show error message
+            }
+        } catch (error) {
+            console.error("Error cancelling booking:", error);
+            alert("Error while canceling booking. Please try again.");
+        }
+    };
+
+
 
 // Trigger fetchBookings when "My Bookings" is active
     useEffect(() => {
@@ -226,6 +264,22 @@ const DashboardPage = () => {
                                             <p><strong>Booking Date:</strong> {booking.date}</p>
                                             <p><strong>Time:</strong> {booking.time.join(' , ')}</p>
                                             <p><strong>Amount Paid:</strong> {booking.payed_amt}</p>
+
+                                            {/* Cancel button */}
+                                            <button
+                                                onClick={() => handleCancelBooking(booking.turfid, booking.date, booking.time,booking.booking_id)}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    backgroundColor: '#ff0000',
+                                                    color: '#fff',
+                                                    border: 'none',
+                                                    borderRadius: '5px',
+                                                    cursor: 'pointer',
+                                                    marginTop: '10px',
+                                                }}
+                                            >
+                                                Cancel Booking
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
@@ -234,6 +288,8 @@ const DashboardPage = () => {
                             )}
                         </div>
                     )}
+
+
 
 
                     {/* Support Section */}
@@ -267,7 +323,24 @@ const DashboardPage = () => {
                     )}
                 </div>
             </div>
+            {showPopup && (
+                <div style={styles.popupOverlay}>
+                    <div style={styles.popup}>
+                        <h3>Confirm Cancellation</h3>
+                        <p>Are you sure you want to cancel this booking?</p>
+                        <div style={styles.popupActions}>
+                            <button onClick={handleCancelBooking} style={styles.confirmButton}>
+                                Yes, Cancel
+                            </button>
+                            <button onClick={() => setShowPopup(false)} style={styles.closeButton}>
+                                No, Go Back
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
+
     );
 };
 

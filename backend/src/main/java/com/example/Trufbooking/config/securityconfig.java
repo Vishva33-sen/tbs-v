@@ -37,7 +37,7 @@ public class securityconfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/home/login", "/home/signup", "/home/locations", "/home/sports", "/home/{turfId}", "/home/turfs", "/api/google-login","/home/user/{email}","/home/wishlist/{email}","/home/user/image/**","/home/uploadImage","/home/update-dates","/bookings/add","/bookings/**").permitAll()
+                        .requestMatchers("/home/login", "/home/signup", "/home/locations", "/home/sports", "/home/{turfId}", "/home/turfs", "/api/google-login","/home/user/{email}","/home/wishlist/{email}","/home/user/image/**","/home/uploadImage","/home/update-dates","/bookings/add","/bookings/**","/admin/signup","/admin/login","/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth

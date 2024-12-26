@@ -13,6 +13,15 @@ import ConfirmPayment from "./Pages/ConfirmPayment.jsx";
 import UserProfile from "./Pages/UserProfile.jsx";
 import Wishlist from "./Pages/Wishlist.jsx";
 import EditProfile from "./Pages/EditProfile.jsx";
+import AdminLogin from "./Pages/AdminLogin.jsx";
+import AdminSignup from "./Pages/AdminSignup.jsx";
+import AddTurfForm from "./Pages/AddTurfForm.jsx";
+import UpdateTurf from "./Pages/UpdateTurf.jsx";
+import EditTurf from "./Pages/EditTurf.jsx";
+import SetSlot from "./Pages/SetSlot.jsx";
+import FinalPay from "./Pages/FinalPay.jsx";
+import BookingDetails from "./Pages/BookingDetails.jsx";
+import PaymentPage from "./Pages/FinalPay.jsx";
 
 const App = () => {
   return (
@@ -40,11 +49,12 @@ const App = () => {
                           <ProtectedRoute>
                               <SlotDetails />
                           </ProtectedRoute>}/>
-                      <Route
-                          path="/confirmpayment" element={
-                          <ProtectedRoute>
-                              <ConfirmPayment />
-                          </ProtectedRoute>}/>
+                      {/*<Route*/}
+                      {/*    path="/confirmpayment" element={*/}
+                      {/*    <ProtectedRoute>*/}
+                      {/*        <ConfirmPayment />*/}
+                      {/*    </ProtectedRoute>}/>*/}
+
                       <Route
                           path="/dashboard"
                           element={
@@ -61,9 +71,25 @@ const App = () => {
                               </ProtectedRoute>
                           }
                       />
+                      {/*<Route*/}
+                      {/*    path="/payment"*/}
+                      {/*    element={*/}
+                      {/*        <ProtectedRoute>*/}
+                      {/*            <PaymentPage />*/}
+                      {/*        </ProtectedRoute>*/}
+                      {/*    }*/}
+                      {/*/>*/}
                       <Route path="/editprofile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
                       <Route path="/locationandsports" element={<ProtectedRoute><LocationAndSports/></ProtectedRoute>}></Route>
-
+                      <Route path="/adminlogin" element={<AdminLogin/>}></Route>
+                      <Route path="/adminsignup" element={<AdminSignup/>}></Route>
+                      <Route path="/turfregister" element={<AddTurfForm/>}></Route>
+                      <Route path="/updateturf" element={<UpdateTurf/>}></Route>
+                      <Route path="/edit-turf/:turfid" element = {<EditTurf/>}></Route>
+                      <Route path="/set-slot/:turfid" element = {<SetSlot/>}></Route>
+                      <Route path="/bookingdetails" element={<BookingDetails/>} />
+                      <Route path="/payment" element={<PaymentPage/>} />
+                      <Route path="/confirmpayment" element={<ConfirmPayment/>} />
                   </Routes>
                   <Footer />
               </AuthProvider>

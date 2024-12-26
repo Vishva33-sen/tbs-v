@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BG from "../assets/sports_11zon.jpg";
+import axios from "axios";
 
 function ConfirmPayment() {
     const [turfDetails, setTurfDetails] = useState(null);
@@ -60,8 +61,9 @@ function ConfirmPayment() {
 
                 console.log("bookingDetailsArray", bookingDetailsArray);
 
-                // Send each booking detail separately
+                // Send each booking detail separately and update the slot status
                 for (const bookingDetails of bookingDetailsArray) {
+                    // Step 1: Send booking details to backend
                     const response = await fetch("http://localhost:8081/bookings/add", {
                         method: "POST",
                         headers: {
@@ -74,9 +76,23 @@ function ConfirmPayment() {
                     if (!response.ok) {
                         throw new Error("Failed to add booking for date: " + bookingDetails.date);
                     }
+
+                    // Step 2: Update the slot status for each selected time slot
+                    for (const time of bookingDetails.time) {
+                        try {
+                            // Call the PUT request to update slot status
+                            const updateResponse = await axios.put(
+                                `http://localhost:8081/admin/${bookingDetails.turfid}?date=${bookingDetails.date}&time=${time}`
+                            );
+                            console.log("Slot status updated:", updateResponse.data);
+                        } catch (error) {
+                            console.error("Error updating slot status:", error);
+                            alert("Error updating slot status.");
+                        }
+                    }
                 }
 
-                alert("All bookings added successfully!");
+                alert("All bookings added and slots updated successfully!");
                 // navigate("/payment"); // Redirect to payment page
             } catch (error) {
                 console.error("Error:", error);
@@ -86,6 +102,7 @@ function ConfirmPayment() {
             alert("No turf or slots selected, or email missing.");
         }
     };
+
 
 
     return (
@@ -241,7 +258,9 @@ function ConfirmPayment() {
                         e.target.style.transform = "scale(1)";
                         e.target.style.boxShadow = "0 6px 15px rgba(0, 0, 0, 0.4)";
                     }}
-                    onClick={handlePayNow}
+                    // onClick={handlePayNow}
+                    onClick={() => navigate("/payment")}
+
                 >
                     Pay Now
                 </button>

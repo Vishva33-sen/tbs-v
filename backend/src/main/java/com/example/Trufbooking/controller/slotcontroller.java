@@ -25,8 +25,8 @@ public class slotcontroller {
     adminservice adminser;
 
     @GetMapping("/{turfId}")
-
     public Map<String, Object> getAvailableSlotsWithTurfDetails(@PathVariable Integer turfId) {
+        System.out.println(turfId);
         // Get available slots
         List<slotdto> availableSlots = slotser.getAvailableSlots(turfId);
         // Fetch turf details using adminservice
